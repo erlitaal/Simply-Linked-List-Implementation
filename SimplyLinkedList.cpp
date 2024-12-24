@@ -1,94 +1,96 @@
 #include <iostream>
 using namespace std;
 
-// Define the structure for an assignment (task)
+// Define a structure for the Assignment node in the linked list
 struct Assignment {
-    string subject;  // The name of the assignment (subject)
-    Assignment* next;  // Pointer to the next assignment in the linked list
+    string subject;         // Stores the name of the subject (task)
+    Assignment* next;       // Pointer to the next assignment in the list
 };
 
-// Function to add a new task at the end of the list
+// Function to add a new assignment at the end of the list
 void addAtEnd(Assignment*& head, string subject) {
-    // Create a new assignment node
+    // Create a new assignment node and assign the subject value
     Assignment* newAssignment = new Assignment();
     newAssignment->subject = subject;
-    newAssignment->next = nullptr;
+    newAssignment->next = nullptr; // The new assignment will point to nothing initially
 
-    // If the list is empty, the new assignment becomes the head
+    // If the list is empty, make the new assignment the head
     if (head == nullptr) {
         head = newAssignment;
     } else {
-        // If the list is not empty, find the last node and add the new task there
+        // Traverse the list to find the last assignment
         Assignment* temp = head;
         while (temp->next != nullptr) {
             temp = temp->next;
         }
+        // Link the last assignment to the new assignment
         temp->next = newAssignment;
     }
 }
 
-// Function to display all tasks in the list
+// Function to display all assignments in the list
 void showAll(Assignment* head) {
+    // If the list is empty, display a message
     if (head == nullptr) {
-        // If the list is empty, display "No tasks"
         cout << "No tasks." << endl;
         return;
     }
-
-    // Traverse the list and display each task
+    // Otherwise, traverse the list and display each task
     Assignment* temp = head;
     int number = 1;
     while (temp != nullptr) {
         cout << number << ". " << temp->subject << endl;  // Display task number and subject
-        temp = temp->next;  // Move to the next task in the list
-        number++;  // Increment task number
+        temp = temp->next;  // Move to the next assignment
+        number++;  // Increment the task number
     }
 }
-
-// Function to delete a task by its number in the list
+// Function to delete a specific assignment by its number
 void deleteSubject(Assignment*& head, int number) {
-    // If the list is empty, print a message and return
+    // Check if the list is empty
     if (head == nullptr) {
         cout << "The task list is empty." << endl;
         return;
     }
-
-    // If the task to be deleted is the first task (head of the list)
+    // If the task to delete is the first task
     if (number == 1) {
-        Assignment* temp = head;  // Store the current head node
-        head = head->next;  // Move the head to the next task
-        delete temp;  // Delete the original head task
-        cout << "Task number 1 has been deleted." << endl;
-        showAll(head);  // Display the updated list
+        Assignment* temp = head;
+        head = head->next;  // Move the head pointer to the next task
+        delete temp;  // Delete the original first task
+        cout << "Task number 1 has been deleted." << endl; // Display task number 1 has been deleted
+        cout << "Task List After Deleting Tasks :" << endl; // Display task list after deleting tasks
+        showAll(head);  // Show the updated task list
         return;
     }
-
-    // Traverse the list to find the task before the one to be deleted
+    // Traverse the list to find the task at the specified number
     Assignment* temp = head;
     int count = 1;
     while (temp != nullptr && count < number - 1) {
         temp = temp->next;  // Move to the next task
-        count++;  // Increment the counter
+        count++;
     }
 
-    // If the task number is invalid or the task is not found
+    // If the task doesn't exist (either out of bounds or invalid number)
     if (temp == nullptr || temp->next == nullptr) {
         cout << "Task number " << number << " not found!" << endl;
         return;
     }
 
-    // Delete the task and update the list
-    Assignment* delAssignment = temp->next;  // Store the task to be deleted
-    temp->next = temp->next->next;  // Link the previous task to the next task
-    delete delAssignment;  // Delete the task
+    // Delete the task at the given number
+    Assignment* delAssignment = temp->next;
+    temp->next = temp->next->next;  // Link the previous task to the one after the deleted task
+    delete delAssignment;  // Free memory of the deleted task
+
     cout << "Task number " << number << " has been deleted." << endl;
-    showAll(head);  // Display the updated list
+    cout << "Task List After Deleting Tasks :" << endl;
+    showAll(head);  // Show the updated task list
 }
 
+// Main function to manage the tasks
 int main() {
-    Assignment* head = nullptr;  // Initialize the head of the list to nullptr
+    // Initialize the head of the assignment list to nullptr
+    Assignment* head = nullptr;
 
-    // Adding initial tasks to the list
+    // Adding some initial tasks to the list
     addAtEnd(head, "Calculus I");
     addAtEnd(head, "Basic Physics");
     addAtEnd(head, "Basic Programming");
@@ -97,32 +99,32 @@ int main() {
     cout << "Task List :" << endl;
     showAll(head);
 
-    // Prompt user to add new tasks
     string newTask;
+    // Allow the user to add tasks interactively
     cout << "Enter a new task to add (or type 'exit' to stop) : ";
     while (true) {
-        cin >> newTask;  // Get the new task input from the user
-        if (newTask == "exit") break;  // If the user types 'exit', stop adding tasks
-        addAtEnd(head, newTask);  // Add the task to the list
+        cin >> newTask;  // Read user input for the task
+        if (newTask == "exit") break;  // If user types "exit", stop adding tasks
+        addAtEnd(head, newTask);  // Add the new task to the list
         
-        // Display the updated list after adding a new task
-        cout << "Task List After Adding New Task : " << endl;
+        // Show the updated list after adding the task
+        cout << "Task List After Adding New Task :" << endl;
         showAll(head);
         cout << "Enter another task to add (or type 'exit' to stop) : ";
     }
 
-    // Prompt user to delete a task by its number
     int choice;
+    // Allow the user to delete tasks interactively by specifying their number
     cout << "Enter the task number you want to delete (or type -1 to stop) : ";
     while (true) {
-        cin >> choice;  // Get the task number input from the user
-        if (choice == -1) break;  // If the user types -1, stop deleting tasks
-        deleteSubject(head, choice);  // Delete the task with the specified number
+        cin >> choice;  // Read user input for the task number
+        if (choice == -1) break;  // If user types -1, stop deleting tasks
+        deleteSubject(head, choice);  // Delete the specified task
     }
 
-    // Display the final task list after deletion
+    // Display the final task list after deletions
     cout << "Task List After Deleting Tasks :";
     showAll(head);
 
-    return 0;  // Return 0 to indicate successful execution
+    return 0;
 }
